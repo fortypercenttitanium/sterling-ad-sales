@@ -1,0 +1,45 @@
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: center;
+  background: center / cover no-repeat url('./images/background.jpeg');
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  color: #202020;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 48px;
+}
+
+h1,
+h2,
+h3 {
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.31);
+}
+
+.header-title h1,
+h2 {
+  font-weight: 400;
+}
+
+.header-deadline {
+}
+
+.main-body {
+  display: flex;
+  justify-content: center;
+}
+
+.footer {
+  display: flex;
+  margin-top: auto;
+  justify-content: center;
+}
+
+.copyright {
+  padding: 12px;
+}
