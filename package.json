@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/fortypercenttitanium/sterling-ad-sales/issues"
   },
-  "homepage": "https://github.com/fortypercenttitanium/sterling-ad-sales#readme"
+  "homepage": "https://github.com/fortypercenttitanium/sterling-ad-sales#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
 }
