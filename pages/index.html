@@ -106,13 +106,23 @@
                   <label for="student">Student seller</label>
                 </div>
                 <div class="input-field s12 m4">
+                  <!-- TODO: pull these values in from json file and render them dynamically -->
                   <select name="ad-size" class="ad-size-select">
                     <option value="" disabled selected>Select one</option>
                     <option value="eighth">Eighth page (text only)</option>
                     <option value="quarter">Quarter page</option>
                     <option value="half">Half page</option>
-                    <option value="full">Full page b/w</option>
-                    <option value="full">Full page color inside</option>
+                    <option value="full_bw">Full page b/w</option>
+                    <option value="full_color">Full page color inside</option>
+                    <option value="front_inside_cover" id="front_inside_cover">
+                      Front inside cover
+                    </option>
+                    <option value="back_inside_cover" id="back_inside_cover">
+                      Back inside cover
+                    </option>
+                    <option value="back_outside_cover" id="back_outside_cover">
+                      Back outside cover
+                    </option>
                   </select>
                   <label>Ad size</label>
                 </div>
