@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const app = express();
 require('dotenv').config();
+const adDetails = require('./adDetails.json');
 
 const PORT = process.env.PORT || 8000;
 const STRIPE_SECRET_KEY =
@@ -19,28 +20,80 @@ app.use(fileUpload());
 
 app.use(express.static(path.join(__dirname, 'pages')));
 
-app.post('/checkout', (req, res) => {
+app.post('/checkout', async (req, res) => {
   const adFile = req.files?.['ad-content-file'];
   const fileSizeLimit = 1048756 * 10;
+  const acceptedExtensions = ['png', 'jpg', 'jpeg', 'pdf', 'svg', 'gif'];
+
   // validate ad file
   if (adFile) {
+    const split = adFile.name.split('.');
+    if (split.length < 2) return badRequest('Invalid file name/extension');
+
+    const fileExt = split[split.length - 1];
+    const fileName = split[0];
+
     // validate size
     if (adFile.size > fileSizeLimit)
-      res.status(400).send('File size too large');
-    // if (!['png, jpg, jpeg, pdf, svg, gif'].includes(adFile.name.split('.')[adFile.name.split('.').length - 1]))
-  }
-  res.status(200).redirect('/');
-});
+      return badRequest(
+        `File size too large. File must be less than ${
+          fileSizeLimit / 1048756
+        }MB.`,
+      );
 
-app.get('/secret', async (req, res) => {
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1,
-    currency: 'usd',
-    automatic_payment_methods: { enabled: true },
-    description: 'test',
+    // validate extension
+    if (!acceptedExtensions.includes(fileExt))
+      return badRequest(
+        `Invalid file extension: ${fileExt}. File extension must be one of: ${acceptedExtensions.toString()}`,
+      );
+    // TODO
+    // if cover, check if available
+  }
+
+  const adInfo = adDetails[req.body['ad-size']];
+
+  if (!adInfo) return badRequest('Invalid ad type chosen\n');
+
+  const { name, price, description, limited } = adInfo;
+  const { notes, company, student } = req.body;
+
+  // create order id
+
+  // todo use metadata to store other info like notes
+  // create stripe session
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name,
+          },
+          unit_amount: price * 100,
+        },
+        quantity: 1,
+        description,
+      },
+    ],
+    allow_promotion_codes: true,
+    mode: 'payment',
+    success_url: `${req.protocol}://${req.get('host')}/success`,
+    cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
   });
 
-  res.json({ client_secret: paymentIntent.client_secret });
+  res.redirect(303, session.url);
+
+  function badRequest(message) {
+    res.status(400).send(message);
+  }
+});
+
+app.use('/success', (req, res) => {
+  res.send('Success!');
+});
+
+app.use('/cancel', (req, res) => {
+  res.send('Cancel!');
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
