@@ -63,3 +63,9 @@
 - How to handle covers
   - Could store availability in database
 - Pricing
+- Cash
+
+### Fix
+
+- Add prices
+- Add full page color

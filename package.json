@@ -26,5 +26,8 @@
     "express-fileupload": "^1.2.1",
     "materialize-css": "^1.0.0-rc.2",
     "stripe": "^8.199.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
