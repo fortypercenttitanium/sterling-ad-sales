@@ -16,8 +16,8 @@ body {
 .header {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 3fr 1fr;
-  padding: 12px 48px;
+  grid-template-columns: 3fr 7fr 3fr;
+  padding: 12px 24px;
 }
 
 h1,
@@ -36,6 +36,10 @@ h6 {
 .header-title * {
   font-weight: 400;
   padding: 0 24px;
+}
+
+.header-side {
+  margin-top: 48px;
 }
 
 .main-body {

@@ -24,5 +24,8 @@
     "express": "^4.17.2",
     "express-fileupload": "^1.2.1",
     "materialize-css": "^1.0.0-rc.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
