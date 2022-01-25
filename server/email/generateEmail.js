@@ -1,4 +1,4 @@
-module.exports = function emailGenerator(session) {
+module.exports = function generateEmail(session) {
   const { amount_total, customer_details, metadata } = session;
   const { email } = customer_details;
   const { notes, company, student, orderNumber, name, adType } = metadata;

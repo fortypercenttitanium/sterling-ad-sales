@@ -28,7 +28,8 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 app.post('/checkout', async (req, res) => {
   const adFile = req.files?.['ad-content-file'];
-  const adInfo = adDetails[req.body['ad-size']];
+  const adType = req.body['ad-size'];
+  const adInfo = adDetails[adType];
   const fileSizeLimit = 1048756 * 10;
   const acceptedExtensions = ['png', 'jpg', 'jpeg', 'pdf', 'svg', 'gif'];
 
@@ -65,7 +66,7 @@ app.post('/checkout', async (req, res) => {
 
   if (!adInfo) return badRequest('Invalid ad type chosen\n');
 
-  const { name: adType, price, description } = adInfo;
+  const { name: adName, price, description } = adInfo;
   const { notes, company, student, name } = req.body;
 
   const orderNumber = await generateNextOrderNumber();
@@ -77,7 +78,7 @@ app.post('/checkout', async (req, res) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: adType,
+            name: adName,
           },
           unit_amount: price * 100,
         },
@@ -114,8 +115,25 @@ app.get('/adAvailability', async (req, res) => {
 });
 
 app.get('/success', async (req, res) => {
+  console.log('Retrieving stripe checkout session...');
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  const { notes, company, student, orderNumber, name, adType } =
+    session.metadata;
+
+  const logDetails = {
+    name,
+    size: adType,
+    price: session.amount_total,
+    company,
+    notes,
+    student,
+    orderNumber,
+  };
+
+  console.log('Logging checkout details in db...');
+  await addLogEntry(logDetails);
   // const customer = await stripe.customers.retrieve(session.customer);
+  console.log('Transaction successful. Sending success page.');
   res.status(200).send(successPageGenerator(session));
 });
 
