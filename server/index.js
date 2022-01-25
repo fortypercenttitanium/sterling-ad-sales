@@ -78,7 +78,7 @@ app.post('/checkout', async (req, res) => {
     ],
     allow_promotion_codes: true,
     mode: 'payment',
-    success_url: `${req.protocol}://${req.get('host')}/success`,
+    success_url: `${req.protocol}://${req.get('host')}/success.html`,
     cancel_url: `${req.protocol}://${req.get('host')}`,
   });
 

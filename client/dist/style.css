@@ -66,6 +66,16 @@ h6 {
   padding: 12px;
 }
 
+.success-body {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  align-items: center;
+  min-height: 100vh;
+  background-color: rgba(200, 200, 200, 0.5);
+  text-align: center;
+}
+
 @media screen and (max-width: 768px) {
   .header {
     grid-template-columns: 100%;
@@ -87,18 +97,5 @@ h6 {
 
   .header-deadline {
     grid-row-start: 3;
-  }
-
-  h3 {
-    font-size: 2.2rem;
-  }
-  h4 {
-    font-size: 1.8rem;
-  }
-  h5 {
-    font-size: 1.6rem;
-  }
-  h6 {
-    font-size: 1.5rem;
   }
 }
