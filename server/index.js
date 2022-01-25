@@ -4,7 +4,8 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const app = express();
 require('dotenv').config();
-const adDetails = require('./adDetails.json');
+const adDetails = require('../adDetails.json');
+const { addLogEntry, getAdCoverAvailability } = require('./db/db');
 
 const PORT = process.env.PORT || 8000;
 const STRIPE_SECRET_KEY =
@@ -18,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(fileUpload());
 
-app.use(express.static(path.join(__dirname, 'pages')));
+app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 app.post('/checkout', async (req, res) => {
   const adFile = req.files?.['ad-content-file'];
@@ -86,6 +87,10 @@ app.post('/checkout', async (req, res) => {
   function badRequest(message) {
     res.status(400).send(message);
   }
+});
+
+app.get('/adAvailability', async (req, res) => {
+  res.json(await getAdCoverAvailability());
 });
 
 app.use('/success', (req, res) => {

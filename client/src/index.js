@@ -1,3 +1,5 @@
+import adDetails from '../../adDetails.json';
+
 const adSizeSelect = document.querySelector('.ad-size-select');
 const adFile = document.querySelector('.ad-content-file-container');
 const adText = document.querySelector('.ad-content-text-container');
@@ -7,7 +9,36 @@ document.addEventListener('DOMContentLoaded', function () {
   adText.style.display = 'none';
   adFile.style.display = 'none';
 
+  // populate select options
+  const select = document.querySelector('.ad-size-select');
+
+  const adOptions = Object.keys(adDetails).filter(
+    (option) => !adDetails[option].limited,
+  );
+
   M.FormSelect.init(elems);
+
+  // get ad cover availability
+  fetch('./adAvailability')
+    .then((res) => res.json())
+    .then((results) => {
+      const allOptions = [...adOptions, ...results];
+
+      allOptions.forEach((option) => {
+        const details = adDetails[option];
+        const el = document.createElement('option');
+        el.value = option;
+        el.textContent = `${details.name} - $${details.price.toString()}`;
+        select.appendChild(el);
+      });
+    })
+
+    .catch((err) => console.error(err))
+    .finally(() => {
+      M.updateTextFields();
+      M.FormSelect.init(elems);
+    });
+
   M.updateTextFields();
 });
 

@@ -69,3 +69,20 @@
 
 - Add prices
 - Add full page color
+
+### Schema
+
+#### Log Entry
+
+```
+LogEntry {
+  timestamp: String!
+  adSize: String!
+  price: Number!
+  name: String!
+  phone: String!
+  notes: String
+  company: String
+  student: String
+}
+```

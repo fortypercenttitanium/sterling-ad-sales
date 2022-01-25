@@ -3,3 +3,6 @@ node_modules
 
 # environment
 .env
+
+# service account
+**/serviceAccountKey.json
