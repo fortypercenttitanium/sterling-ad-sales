@@ -4,8 +4,13 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const app = express();
 require('dotenv').config();
+const successPageGenerator = require('./successPageGenerator');
 const adDetails = require('../adDetails.json');
-const { addLogEntry, getAdCoverAvailability } = require('./db/db');
+const {
+  addLogEntry,
+  getAdCoverAvailability,
+  generateNextOrderNumber,
+} = require('./db/db');
 
 const PORT = process.env.PORT || 8000;
 const STRIPE_SECRET_KEY =
@@ -23,6 +28,7 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 app.post('/checkout', async (req, res) => {
   const adFile = req.files?.['ad-content-file'];
+  const adInfo = adDetails[req.body['ad-size']];
   const fileSizeLimit = 1048756 * 10;
   const acceptedExtensions = ['png', 'jpg', 'jpeg', 'pdf', 'svg', 'gif'];
 
@@ -32,7 +38,6 @@ app.post('/checkout', async (req, res) => {
     if (split.length < 2) return badRequest('Invalid file name/extension');
 
     const fileExt = split[split.length - 1];
-    const fileName = split[0];
 
     // validate size
     if (adFile.size > fileSizeLimit)
@@ -47,20 +52,24 @@ app.post('/checkout', async (req, res) => {
       return badRequest(
         `Invalid file extension: ${fileExt}. File extension must be one of: ${acceptedExtensions.toString()}`,
       );
-    // TODO
-    // if cover, check if available
-  }
 
-  const adInfo = adDetails[req.body['ad-size']];
+    if (adInfo.limited) {
+      const availableCovers = await getAdCoverAvailability();
+
+      if (!availableCovers.includes(size))
+        throw new Error(
+          `Cannot purchase ad type ${size}. This limited ad type has already been purchased.`,
+        );
+    }
+  }
 
   if (!adInfo) return badRequest('Invalid ad type chosen\n');
 
-  const { name, price, description, limited } = adInfo;
-  const { notes, company, student } = req.body;
+  const { name: adType, price, description } = adInfo;
+  const { notes, company, student, name } = req.body;
 
-  // create order id
+  const orderNumber = await generateNextOrderNumber();
 
-  // todo use metadata to store other info like notes
   // create stripe session
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -68,7 +77,7 @@ app.post('/checkout', async (req, res) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name,
+            name: adType,
           },
           unit_amount: price * 100,
         },
@@ -78,8 +87,19 @@ app.post('/checkout', async (req, res) => {
     ],
     allow_promotion_codes: true,
     mode: 'payment',
-    success_url: `${req.protocol}://${req.get('host')}/success.html`,
+    success_url: `${req.protocol}://${req.get(
+      'host',
+    )}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${req.protocol}://${req.get('host')}`,
+    metadata: {
+      notes,
+      company,
+      student,
+      orderNumber,
+      name,
+      adType,
+      description,
+    },
   });
 
   res.redirect(303, session.url);
@@ -91,6 +111,12 @@ app.post('/checkout', async (req, res) => {
 
 app.get('/adAvailability', async (req, res) => {
   res.json(await getAdCoverAvailability());
+});
+
+app.get('/success', async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  // const customer = await stripe.customers.retrieve(session.customer);
+  res.status(200).send(successPageGenerator(session));
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));

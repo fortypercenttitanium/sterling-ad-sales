@@ -7,14 +7,54 @@ initializeApp();
 const db = getFirestore();
 
 const adTypes = Object.keys(adDetails);
-const limitedAdTypes = adTypes.filter((type) => adDetails[type].limited);
 
 // calculate the current school year - this will help store the data in the correct collection
 const date = new Date();
 const thisYear = date.getFullYear();
 const schoolYear = date.getMonth() < 8 ? thisYear : thisYear + 1;
 
-async function addLogEntry({ name, size, price, company, notes, student }) {
+// create an order number (generated dynamically)
+async function generateNextOrderNumber() {
+  // reference the current school year collection
+  const ref = await db.collection(schoolYear.toString());
+
+  // get the next order number
+  const lastOrder = await ref.orderBy('orderNumber', 'desc').limit(1).get();
+
+  // prepend school year to order number
+  let orderNumber = `${schoolYear.toString()}-`;
+
+  if (lastOrder.empty) {
+    orderNumber += '001';
+  } else {
+    const lastOrderNumber = lastOrder.docs[0].id;
+
+    // get the next number
+    let nextOrderNumber = (
+      Number(lastOrderNumber.split('-').pop()) + 1
+    ).toString();
+    // prepend 0s to beginning of number
+    while (nextOrderNumber.length < 3) {
+      nextOrderNumber = '0' + nextOrderNumber;
+    }
+
+    orderNumber += nextOrderNumber;
+  }
+
+  await ref.doc(orderNumber).set({ orderNumber });
+
+  return orderNumber;
+}
+
+async function addLogEntry({
+  name,
+  size,
+  price,
+  company,
+  notes,
+  student,
+  orderNumber,
+}) {
   try {
     // validate data
     [name, size].forEach((property) => {
@@ -49,39 +89,6 @@ async function addLogEntry({ name, size, price, company, notes, student }) {
     // reference the current school year collection
     const ref = await db.collection(schoolYear.toString());
 
-    // check db for ad type if a cover, also check for previous order number
-    if (limitedAdTypes.includes(size)) {
-      const availableCovers = getAdCoverAvailability();
-
-      if (!availableCovers.includes(size))
-        throw new Error(
-          `Cannot purchase ad type ${size}. This limited ad type has already been purchased.`,
-        );
-    }
-
-    // get the next order number
-    const lastOrder = await ref.orderBy('orderNumber', 'desc').limit(1).get();
-
-    // prepend school year to order number
-    let orderNumber = `${schoolYear.toString()}-`;
-
-    if (lastOrder.empty) {
-      orderNumber += '001';
-    } else {
-      const lastOrderNumber = lastOrder.docs[0].id;
-
-      // get the next number
-      let nextOrderNumber = (
-        Number(lastOrderNumber.split('-').pop()) + 1
-      ).toString();
-      // prepend 0s to beginning of number
-      while (nextOrderNumber.length < 3) {
-        nextOrderNumber = '0' + nextOrderNumber;
-      }
-
-      orderNumber += nextOrderNumber;
-    }
-
     await ref.doc(orderNumber).set({
       name,
       size,
@@ -92,6 +99,8 @@ async function addLogEntry({ name, size, price, company, notes, student }) {
       timestamp,
       orderNumber,
     });
+
+    return orderNumber;
   } catch (err) {
     throw new Error(err);
   }
@@ -113,4 +122,8 @@ async function getAdCoverAvailability() {
   return availableCovers;
 }
 
-module.exports = { addLogEntry, getAdCoverAvailability };
+module.exports = {
+  addLogEntry,
+  getAdCoverAvailability,
+  generateNextOrderNumber,
+};
