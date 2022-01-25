@@ -6,7 +6,6 @@ const adText = document.querySelector('.ad-content-text-container');
 
 document.addEventListener('DOMContentLoaded', function () {
   var elems = document.querySelectorAll('select');
-  adText.style.display = 'none';
   adFile.style.display = 'none';
 
   // populate select options
@@ -40,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
   M.updateTextFields();
+  updateSelectOptions();
 });
 
 adFile.addEventListener('change', (e) => {
@@ -50,7 +50,9 @@ adFile.addEventListener('change', (e) => {
   }
 });
 
-adSizeSelect.addEventListener('change', (e) => {
+adSizeSelect.addEventListener('change', updateSelectOptions);
+
+function updateSelectOptions(e) {
   const adTextInput = document.querySelector('#ad-content-text');
   const adFileInput = document.querySelector('#ad-content-file');
 
@@ -79,4 +81,4 @@ adSizeSelect.addEventListener('change', (e) => {
   }
 
   M.updateTextFields();
-});
+}

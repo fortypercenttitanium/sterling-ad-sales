@@ -79,7 +79,7 @@ app.post('/checkout', async (req, res) => {
     allow_promotion_codes: true,
     mode: 'payment',
     success_url: `${req.protocol}://${req.get('host')}/success`,
-    cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
+    cancel_url: `${req.protocol}://${req.get('host')}`,
   });
 
   res.redirect(303, session.url);
@@ -91,14 +91,6 @@ app.post('/checkout', async (req, res) => {
 
 app.get('/adAvailability', async (req, res) => {
   res.json(await getAdCoverAvailability());
-});
-
-app.use('/success', (req, res) => {
-  res.send('Success!');
-});
-
-app.use('/cancel', (req, res) => {
-  res.send('Cancel!');
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
