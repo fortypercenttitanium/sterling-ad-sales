@@ -1,8 +1,14 @@
-module.exports = function successPageGenerator(session) {
-  const { amount_total, customer_details, metadata } = session;
-  const { email } = customer_details;
-  const { notes, company, student, orderNumber, name, adType } = metadata;
-  const amount_formatted = (amount_total / 100).toFixed(2);
+module.exports = function successPageGenerator({
+  name,
+  adName,
+  price,
+  company,
+  notes,
+  student,
+  orderNumber,
+  email,
+}) {
+  const price_formatted = (price / 100).toFixed(2);
   const contact_email = process.env.CONTACT_EMAIL;
 
   return `
@@ -27,8 +33,8 @@ module.exports = function successPageGenerator(session) {
           Name: ${name}<br />
           Company: ${company}<br />
           Email: ${email}<br />
-          Amount total: $${amount_formatted}<br />
-          Ad type: ${adType}<br />
+          Amount total: $${price_formatted}<br />
+          Ad type: ${adName}<br />
           Student seller: ${student}<br />
           Notes: ${notes}</p>
           <p class="questions">

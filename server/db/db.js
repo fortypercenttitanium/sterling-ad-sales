@@ -1,28 +1,30 @@
+require('dotenv').config();
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
+const { getStorage } = require('firebase-admin/storage');
 const adDetails = require('../../adDetails.json');
-require('dotenv').config();
 
-initializeApp();
+initializeApp({ storageBucket: 'sterling-ad-sales.appspot.com' });
 const db = getFirestore();
+const storage = getStorage().bucket();
 
 const adTypes = Object.keys(adDetails);
 
 // calculate the current school year - this will help store the data in the correct collection
 const date = new Date();
 const thisYear = date.getFullYear();
-const schoolYear = date.getMonth() < 8 ? thisYear : thisYear + 1;
+const schoolYear = (date.getMonth() < 8 ? thisYear : thisYear + 1).toString();
 
 // create an order number (generated dynamically)
 async function generateNextOrderNumber() {
   // reference the current school year collection
-  const ref = await db.collection(schoolYear.toString());
+  const ref = await db.collection(schoolYear);
 
   // get the next order number
   const lastOrder = await ref.orderBy('orderNumber', 'desc').limit(1).get();
 
   // prepend school year to order number
-  let orderNumber = `${schoolYear.toString()}-`;
+  let orderNumber = `${schoolYear}-`;
 
   if (lastOrder.empty) {
     orderNumber += '001';
@@ -54,10 +56,11 @@ async function addLogEntry({
   notes,
   student,
   orderNumber,
+  email,
 }) {
   try {
     // validate data
-    [name, size].forEach((property) => {
+    [name, size, email].forEach((property) => {
       if (typeof property !== 'string') {
         throw new Error(
           `Invalid type for property "name" or "size". Expected string, received ${property}.`,
@@ -87,7 +90,7 @@ async function addLogEntry({
     const timestamp = Timestamp.now();
 
     // reference the current school year collection
-    const ref = await db.collection(schoolYear.toString());
+    const ref = await db.collection(schoolYear);
 
     await ref.doc(orderNumber).set({
       name,
@@ -98,6 +101,7 @@ async function addLogEntry({
       student,
       timestamp,
       orderNumber,
+      email,
     });
 
     return orderNumber;
@@ -108,7 +112,7 @@ async function addLogEntry({
 
 async function getAdCoverAvailability() {
   // reference the current school year collection
-  const ref = await db.collection(schoolYear.toString());
+  const ref = await db.collection(schoolYear);
 
   // return an array of limited ads that are still available
   const limitedAdTypes = adTypes.filter((type) => adDetails[type].limited);
@@ -122,8 +126,28 @@ async function getAdCoverAvailability() {
   return availableCovers;
 }
 
+async function uploadFile(fileName, data) {
+  try {
+    const file = storage.file(fileName);
+    await file.save(data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function downloadFile(name) {
+  try {
+    const file = await storage.file(name).download();
+    return file;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   addLogEntry,
   getAdCoverAvailability,
   generateNextOrderNumber,
+  uploadFile,
+  downloadFile,
 };
