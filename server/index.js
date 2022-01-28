@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 app.post('/checkout', async (req, res) => {
   try {
     const adFile = req.files?.['ad-content-file'];
-    const adText = req.body['ad-content-text'];
+    const adText = req.body['ad-content-text'] || '';
     const adType = req.body['ad-size'];
     const adInfo = adDetails[adType];
     let fileExt;
@@ -171,6 +171,11 @@ app.get('/success', async (req, res) => {
 
     console.log('Logging checkout details in db...');
     await addLogEntry(details);
+
+    // todo: only send emails once even if success page is reloaded
+    console.log('Transaction successful. Sending success page...');
+    res.status(200).send(successPageGenerator(details));
+
     // send email to vendor
     console.log('Sending email to vendor...');
 
@@ -200,10 +205,7 @@ app.get('/success', async (req, res) => {
       subject: `Receipt for Order #${orderNumber}`,
       html: generateCustomerEmail(details),
     });
-
-    // todo: only send emails once even if success page is reloaded
-    console.log('Transaction successful. Sending success page.');
-    res.status(200).send(successPageGenerator(details));
+    console.log('Done!');
   } catch (err) {
     console.error(err);
   }
