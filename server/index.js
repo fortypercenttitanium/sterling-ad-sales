@@ -12,6 +12,8 @@ const {
   generateNextOrderNumber,
   uploadFile,
   downloadFile,
+  checkIfConfirmationSent,
+  setConfirmationSent,
 } = require('./db/db');
 const sendEmail = require('./email/sendEmail');
 const generateCustomerEmail = require('./email/generateCustomerEmail');
@@ -164,47 +166,58 @@ app.get('/success', async (req, res) => {
       notes,
       student,
       orderNumber,
-      email,
+      customerEmail: email,
       adName,
       adText,
     };
 
-    console.log('Logging checkout details in db...');
-    await addLogEntry(details);
-
-    // todo: only send emails once even if success page is reloaded
-    console.log('Transaction successful. Sending success page...');
+    console.log('Sending success page...');
     res.status(200).send(successPageGenerator(details));
 
-    // send email to vendor
-    console.log('Sending email to vendor...');
+    console.log('Checking if confirmation email was sent...');
+    const confirmationSent = await checkIfConfirmationSent(orderNumber);
 
-    // check if file is included with purchase
-    let attachments = null;
-    if (adFileName) {
-      const fileData = await downloadFile(adFileName);
-      attachments = [
-        {
-          filename: adFileName,
-          content: fileData[0],
-        },
-      ];
+    if (!confirmationSent) {
+      console.log(`Confirmation email for order ${orderNumber} not sent yet.`);
+      console.log('Logging checkout details in db...');
+      await addLogEntry(details);
+
+      // send email to vendor
+      console.log('Sending email to vendor...');
+
+      // check if file is included with purchase
+      let attachments = null;
+      if (adFileName) {
+        const fileData = await downloadFile(adFileName);
+        attachments = [
+          {
+            filename: adFileName,
+            content: fileData[0],
+          },
+        ];
+      }
+
+      await sendEmail({
+        recipient: vendorEmail,
+        details,
+        subject: `Order #${orderNumber}`,
+        html: generateVendorEmail(details),
+        attachments,
+      });
+      console.log('Sending email to customer...');
+      await sendEmail({
+        recipient: email,
+        details,
+        subject: `Receipt for Order #${orderNumber}`,
+        html: generateCustomerEmail(details),
+      });
+
+      await setConfirmationSent(orderNumber);
+    } else {
+      console.log(
+        `Confirmation email for order ${orderNumber} has already been sent.`,
+      );
     }
-
-    await sendEmail({
-      recipient: vendorEmail,
-      details,
-      subject: `Order #${orderNumber}`,
-      html: generateVendorEmail(details),
-      attachments,
-    });
-    console.log('Sending email to customer...');
-    await sendEmail({
-      recipient: email,
-      details,
-      subject: `Receipt for Order #${orderNumber}`,
-      html: generateCustomerEmail(details),
-    });
     console.log('Done!');
   } catch (err) {
     console.error(err);

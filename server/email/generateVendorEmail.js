@@ -7,6 +7,7 @@ module.exports = function generateVendorEmail({
   student,
   orderNumber,
   adText,
+  customerEmail,
 }) {
   const price_formatted = (price / 100).toFixed(2);
   return `
@@ -18,6 +19,7 @@ module.exports = function generateVendorEmail({
           <h3 class="details">Details:</h3>
           <p>Order number: ${orderNumber}</p>
           Name: ${name}<br />
+          Email: ${customerEmail}<br />
           Company: ${company}<br />
           Amount total: ${price_formatted}<br />
           Ad type: ${adName}<br />

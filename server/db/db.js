@@ -56,14 +56,14 @@ async function addLogEntry({
   notes,
   student,
   orderNumber,
-  email,
+  customerEmail,
 }) {
   try {
     // validate data
-    [name, size, email].forEach((property) => {
+    [name, size, customerEmail].forEach((property) => {
       if (typeof property !== 'string') {
         throw new Error(
-          `Invalid type for property "name" or "size". Expected string, received ${property}.`,
+          `Invalid type for property "name", "size", or "email". Expected string, received ${property}.`,
         );
       }
     });
@@ -101,13 +101,33 @@ async function addLogEntry({
       student,
       timestamp,
       orderNumber,
-      email,
+      email: customerEmail,
+      confirmationEmailSent: false,
     });
 
     return orderNumber;
   } catch (err) {
     throw new Error(err);
   }
+}
+
+async function checkIfConfirmationSent(orderNumber) {
+  // reference the current school year collection
+  const ref = await db.collection(schoolYear);
+  const order = await ref.doc(orderNumber).get();
+  return await order.data().confirmationEmailSent;
+}
+
+async function setConfirmationSent(orderNumber) {
+  // reference the current school year collection
+  const ref = await db.collection(schoolYear);
+
+  await ref.doc(orderNumber).set(
+    {
+      confirmationEmailSent: true,
+    },
+    { merge: true },
+  );
 }
 
 async function getAdCoverAvailability() {
@@ -150,4 +170,6 @@ module.exports = {
   generateNextOrderNumber,
   uploadFile,
   downloadFile,
+  checkIfConfirmationSent,
+  setConfirmationSent,
 };
