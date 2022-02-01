@@ -6,10 +6,9 @@ module.exports = function successPageGenerator({
   notes,
   student,
   orderNumber,
-  email,
+  customerEmail,
 }) {
   const price_formatted = (price / 100).toFixed(2);
-  const contact_email = process.env.CONTACT_EMAIL;
 
   return `
   <!DOCTYPE html>
@@ -39,7 +38,7 @@ module.exports = function successPageGenerator({
           Notes: ${notes}</p>
           <p class="questions">
             Questions or concerns?<br />
-            <a href="mailto:${contact_email}">Please contact us.</a>
+            <a href="mailto:${customerEmail}">Please contact us.</a>
           </p>
           <p><a href="/">Return to main page</a></p>
         </div>
