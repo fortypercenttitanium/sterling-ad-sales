@@ -9,6 +9,7 @@ module.exports = function successPageGenerator({
   customerEmail,
 }) {
   const price_formatted = (price / 100).toFixed(2);
+  const contactEmail = process.env.CONTACT_EMAIL;
 
   return `
   <!DOCTYPE html>
@@ -31,14 +32,14 @@ module.exports = function successPageGenerator({
           <p>Order number: ${orderNumber}</p>
           Name: ${name}<br />
           Company: ${company}<br />
-          Email: ${email}<br />
+          Email: ${customerEmail}<br />
           Amount total: $${price_formatted}<br />
           Ad type: ${adName}<br />
           Student seller: ${student}<br />
           Notes: ${notes}</p>
           <p class="questions">
             Questions or concerns?<br />
-            <a href="mailto:${customerEmail}">Please contact us.</a>
+            <a href="mailto:${contactEmail}">Please contact us.</a>
           </p>
           <p><a href="/">Return to main page</a></p>
         </div>
