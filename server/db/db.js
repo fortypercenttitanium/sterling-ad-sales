@@ -27,7 +27,7 @@ async function generateNextOrderNumber() {
   let orderNumber = `${schoolYear}-`;
 
   if (lastOrder.empty) {
-    orderNumber += '001';
+    orderNumber += '0001';
   } else {
     const lastOrderNumber = lastOrder.docs[0].id;
 
@@ -36,7 +36,7 @@ async function generateNextOrderNumber() {
       Number(lastOrderNumber.split('-').pop()) + 1
     ).toString();
     // prepend 0s to beginning of number
-    while (nextOrderNumber.length < 3) {
+    while (nextOrderNumber.length < 4) {
       nextOrderNumber = '0' + nextOrderNumber;
     }
 
