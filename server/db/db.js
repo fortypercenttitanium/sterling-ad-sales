@@ -1,16 +1,10 @@
 require('dotenv').config();
-const admin = require('firebase-admin');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const { getStorage } = require('firebase-admin/storage');
 const adDetails = require('../../adDetails.json');
 
-const creds = JSON.parse(process.env.CREDS);
-
-console.log(creds);
-
 initializeApp({
-  credential: admin.credential.cert(creds),
   storageBucket: 'sterling-ad-sales.appspot.com',
 });
 const db = getFirestore();
