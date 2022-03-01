@@ -1,10 +1,18 @@
 require('dotenv').config();
+const admin = require('firebase-admin');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const { getStorage } = require('firebase-admin/storage');
 const adDetails = require('../../adDetails.json');
 
-initializeApp({ storageBucket: 'sterling-ad-sales.appspot.com' });
+const creds = JSON.parse(process.env.CREDS);
+
+console.log(creds);
+
+initializeApp({
+  credential: admin.credential.cert(creds),
+  storageBucket: 'sterling-ad-sales.appspot.com',
+});
 const db = getFirestore();
 const storage = getStorage().bucket();
 
@@ -131,19 +139,23 @@ async function setConfirmationSent(orderNumber) {
 }
 
 async function getAdCoverAvailability() {
-  // reference the current school year collection
-  const ref = await db.collection(schoolYear);
+  try {
+    // reference the current school year collection
+    const ref = await db.collection(schoolYear);
 
-  // return an array of limited ads that are still available
-  const limitedAdTypes = adTypes.filter((type) => adDetails[type].limited);
+    // return an array of limited ads that are still available
+    const limitedAdTypes = adTypes.filter((type) => adDetails[type].limited);
 
-  const query = await ref.get();
-  const allSales = query.docs.map((doc) => doc.data());
+    const query = await ref.get();
+    const allSales = query.docs.map((doc) => doc.data());
 
-  const availableCovers = limitedAdTypes.filter(
-    (adType) => !allSales.some((sale) => sale.size === adType),
-  );
-  return availableCovers;
+    const availableCovers = limitedAdTypes.filter(
+      (adType) => !allSales.some((sale) => sale.size === adType),
+    );
+    return availableCovers;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 async function uploadFile(fileName, data) {
