@@ -42,7 +42,7 @@ app.post('/checkout', async (req, res) => {
     const adType = req.body['ad-size'];
     const adInfo = adDetails[adType];
     let fileExt;
-    let adFileName;
+    let adFileName = null;
     const fileSizeLimit = 1048756 * 10;
     const acceptedExtensions = ['png', 'jpg', 'jpeg', 'pdf', 'svg', 'gif'];
 
@@ -169,6 +169,7 @@ app.get('/success', async (req, res) => {
       customerEmail: email,
       adName,
       adText,
+      adFileName,
     };
 
     console.log('Sending success page...');
@@ -187,6 +188,7 @@ app.get('/success', async (req, res) => {
 
       // check if file is included with purchase
       let attachments = null;
+      console.log(adFileName);
       if (adFileName) {
         const fileData = await downloadFile(adFileName);
         attachments = [
@@ -197,7 +199,7 @@ app.get('/success', async (req, res) => {
         ];
       }
 
-      await sendEmail({
+      const vendorInfo = await sendEmail({
         recipient: vendorEmail,
         details,
         subject: `Order #${orderNumber}`,
@@ -205,12 +207,21 @@ app.get('/success', async (req, res) => {
         attachments,
       });
       console.log('Sending email to customer...');
-      await sendEmail({
+      const customerInfo = await sendEmail({
         recipient: email,
         details,
         subject: `Receipt for Order #${orderNumber}`,
         html: generateCustomerEmail(details),
       });
+
+      if (!customerInfo || customerInfo.rejected.length)
+        return console.log(
+          `Failed to send customer email to order #${orderNumber}`,
+        );
+      if (!vendorInfo || vendorInfo.rejected.length)
+        return console.log(
+          `Failed to send vendor email to order #${orderNumber}`,
+        );
 
       await setConfirmationSent(orderNumber);
     } else {

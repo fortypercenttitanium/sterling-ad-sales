@@ -50,17 +50,22 @@ async function generateNextOrderNumber() {
   return orderNumber;
 }
 
-async function addLogEntry({
-  name,
-  size,
-  price,
-  company,
-  notes,
-  student,
-  orderNumber,
-  customerEmail,
-}) {
+async function addLogEntry(details) {
   try {
+    const {
+      name,
+      size,
+      price,
+      company,
+      notes,
+      student,
+      orderNumber,
+      customerEmail,
+      adText,
+      adFileName,
+      adName,
+    } = details;
+
     // validate data
     [name, size, customerEmail].forEach((property) => {
       if (typeof property !== 'string') {
@@ -81,13 +86,18 @@ async function addLogEntry({
       );
     }
 
-    [company, notes, student].forEach((property) => {
-      if (typeof property !== 'string' && typeof property !== 'null') {
-        throw new Error(
-          `Invalid type for property "company", "name", or "student". Expected string or null, received ${property}.`,
-        );
-      }
-    });
+    ['company', 'notes', 'student', 'adText', 'adFileName', 'adName'].forEach(
+      (property) => {
+        if (
+          typeof details[property] !== 'string' &&
+          typeof details[property] !== 'null'
+        ) {
+          throw new Error(
+            `Invalid type for property ${property}. Expected string or null, received ${details[property]}.`,
+          );
+        }
+      },
+    );
 
     const timestamp = Timestamp.now();
 
@@ -105,6 +115,9 @@ async function addLogEntry({
       orderNumber,
       email: customerEmail,
       confirmationEmailSent: false,
+      adText,
+      adFileName,
+      adName,
     });
 
     return orderNumber;

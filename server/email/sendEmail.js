@@ -31,6 +31,7 @@ module.exports = async function sendEmail({
     });
 
     console.log('Message sent: %s', info.messageId);
+    return info;
   } catch (err) {
     console.error(err);
   }
