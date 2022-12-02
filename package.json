@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index",
+    "start": "npx webpack --no-watch && node server/index",
     "dev:server": "nodemon server/index",
     "dev:client": "npx webpack",
     "zip": "zip ../sterling-ad-sales.zip -r * .[^.]*"
