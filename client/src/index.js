@@ -56,6 +56,8 @@ adFile.addEventListener('change', (e) => {
 adSizeSelect.addEventListener('change', updateSelectOptions);
 
 function updateSelectOptions(e) {
+  if (!e) return;
+
   const adTextInput = document.querySelector('#ad-content-text');
   const adFileInput = document.querySelector('#ad-content-file');
 
