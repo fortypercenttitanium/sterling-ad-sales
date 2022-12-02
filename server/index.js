@@ -139,6 +139,8 @@ app.get('/adAvailability', async (req, res) => {
   res.json(await getAdCoverAvailability());
 });
 
+app.get('/health', (req, res) => res.sendStatus(200));
+
 app.get('/success', async (req, res) => {
   try {
     console.log('Retrieving stripe checkout session...');
