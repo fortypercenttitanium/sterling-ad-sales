@@ -43,7 +43,7 @@ app.post('/checkout', async (req, res) => {
     const adInfo = adDetails[adType];
     let fileExt;
     let adFileName = null;
-    const fileSizeLimit = 1048756 * 10;
+    const fileSizeLimit = 1048756 * 20;
     const acceptedExtensions = ['png', 'jpg', 'jpeg', 'pdf', 'svg', 'gif'];
 
     const { name: adName, price, description } = adInfo;
@@ -188,7 +188,7 @@ app.get('/success', async (req, res) => {
 
       // check if file is included with purchase
       let attachments = null;
-      console.log(adFileName);
+
       if (adFileName) {
         const fileData = await downloadFile(adFileName);
         attachments = [

@@ -43,9 +43,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 adFile.addEventListener('change', (e) => {
-  const limitInMb = 10;
+  const limitInMb = 20;
+
   if (e.target.files[0].size > 1048576 * limitInMb) {
-    alert(`File must be less than ${limitInMB}MB`);
+    alert(
+      `File must be less than ${limitInMb}MB. Try using an online compression service like https://imagecompressor.com/ or https://pdfcompressor.com/ to reduce your file's size!`,
+    );
     e.target.value = '';
   }
 });

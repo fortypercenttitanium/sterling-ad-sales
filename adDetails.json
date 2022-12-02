@@ -19,31 +19,31 @@
   },
   "full_bw": {
     "name": "Full page b/w ad",
-    "price": 100,
+    "price": 150,
     "description": "Full page black and white advertisement in Sterling HS Spring Musical ad book. This ad will be displayed somewhere on the inside part of the ad book (not cover).",
     "limited": false
   },
   "full_color": {
     "name": "Full page color ad",
-    "price": 150,
+    "price": 200,
     "description": "Full page color advertisement in Sterling HS Spring Musical ad book. This ad will be displayed somewhere on the inside part of the ad book (not cover).",
     "limited": false
   },
   "front_inside_cover": {
     "name": "Front Inside Cover ad",
-    "price": 200,
+    "price": 250,
     "description": "Full page color advertisement in Sterling HS Spring Musical ad book. This ad will be displayed on the front inside cover of the book.",
     "limited": true
   },
   "back_inside_cover": {
     "name": "Back Inside Cover ad",
-    "price": 200,
+    "price": 250,
     "description": "Full page color advertisement in Sterling HS Spring Musical ad book. This ad will be displayed on the back inside cover of the book.",
     "limited": true
   },
   "back_outside_cover": {
     "name": "Back Outside Cover ad",
-    "price": 200,
+    "price": 350,
     "description": "Full page color advertisement in Sterling HS Spring Musical ad book. This ad will be displayed on the back outside cover of the book.",
     "limited": true
   }

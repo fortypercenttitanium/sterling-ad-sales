@@ -11,20 +11,16 @@
       href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;700&display=swap"
       rel="stylesheet"
     />
-    <!--Import Google Icon Font-->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
-    <!--Import materialize.css-->
     <link
       type="text/css"
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
       media="screen,projection"
     />
-
-    <!-- Compiled and minified JavaScript -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
       defer
@@ -36,19 +32,123 @@
   <body>
     <div class="main-container">
       <header class="header">
-        <div class="header-deadline header-side"></div>
-        <div class="header-title">
-          <h3>Sterling High School</h3>
-          <h4>Spring Musical</h4>
-          <h4>See you next year!</h4>
+        <div class="header-deadline header-side">
+          <h5>Ad submission deadline:</h5>
+          <h6>February 13th, 2023</h6>
         </div>
-        <div class="header-details header-side"></div>
+        <div class="header-title">
+          <h3>Sterling High School presents</h3>
+          <img class="logo" src="images/logo.png" alt="The Descendents Logo" />
+          <h4>2023 Spring Musical</h4>
+        </div>
+        <div class="header-details header-side">
+          <h5>Dates:</h5>
+          <h6>March 16, 17, 18 - 7pm</h6>
+          <h6>March 18 matinee 2pm</h6>
+        </div>
       </header>
       <main class="main-body">
         <div class="card form-container grey lighten-3">
-          <h5>
-            Ads are not being sold at the moment. Please check back later.
-          </h5>
+          <form action="/checkout" method="POST" enctype="multipart/form-data">
+            <div class="card-content blue-text text-darken-4">
+              <h1 class="form-title">Ad Purchase Form</h1>
+              <div class="card-content">
+                <div class="input-field s6">
+                  <input
+                    name="name"
+                    id="name"
+                    type="text"
+                    class="validate"
+                    required
+                  />
+                  <label for="name">Name *</label>
+                </div>
+                <div class="input-field s6">
+                  <input
+                    name="company"
+                    id="company"
+                    type="text"
+                    class="validate"
+                  />
+                  <label for="company">Company</label>
+                </div>
+                <div class="input-field s6">
+                  <input
+                    name="email"
+                    id="email"
+                    type="email"
+                    class="validate"
+                    required
+                  />
+                  <label for="email">Email *</label>
+                </div>
+                <div class="input-field s6">
+                  <input
+                    name="phone"
+                    id="phone"
+                    type="tel"
+                    class="validate"
+                    required
+                  />
+                  <label for="phone">Phone *</label>
+                </div>
+                <div class="input-field s6">
+                  <input
+                    name="student"
+                    id="student"
+                    type="text"
+                    class="validate"
+                  />
+                  <label for="student">Student seller</label>
+                </div>
+                <div class="input-field s12 m4">
+                  <select
+                    title="ad size"
+                    name="ad-size"
+                    class="ad-size-select"
+                  ></select>
+                  <label>Ad size</label>
+                </div>
+                <div class="ad-content-file-container">
+                  <input
+                    type="file"
+                    id="ad-content-file"
+                    name="ad-content-file"
+                    accept="image/*,.pdf"
+                  />
+                  <label for="ad-content-file">Image or PDF files only</label>
+                </div>
+                <div class="input-field s6 ad-content-text-container">
+                  <input
+                    id="ad-content-text"
+                    name="ad-content-text"
+                    type="text"
+                    class="validate"
+                    maxlength="75"
+                    required
+                  />
+                  <label for="ad-content-text">Ad text *</label>
+                </div>
+                <div class="input-field col s12">
+                  <textarea
+                    name="notes"
+                    id="notes"
+                    class="materialize-textarea"
+                  ></textarea>
+                  <label for="notes">Additional notes</label>
+                </div>
+              </div>
+              <div class="card-action">
+                <button
+                  class="btn waves-effect waves-light blue darken-4"
+                  type="submit"
+                >
+                  Submit
+                  <i class="material-icons right">send</i>
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </main>
       <footer class="footer">

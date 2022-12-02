@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index",
-    "dev": "NODE_ENV=development nodemon server/index",
+    "dev:server": "nodemon server/index",
+    "dev:client": "npx webpack",
     "zip": "zip ../sterling-ad-sales.zip -r * .[^.]*"
   },
   "repository": {
